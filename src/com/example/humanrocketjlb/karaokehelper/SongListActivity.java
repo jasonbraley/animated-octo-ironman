@@ -1,17 +1,19 @@
 package com.example.humanrocketjlb.karaokehelper;
 
+import android.app.ListActivity;
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.Menu;
 
-public class SongListActivity extends Activity
+public class SongListActivity extends ListActivity
 {
+    private SongListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
-	setContentView(R.layout.activity_song_list);
+	
+	getListView().setAdapter(adapter);
     }
 
     @Override
