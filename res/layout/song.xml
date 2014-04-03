@@ -4,14 +4,15 @@
     android:layout_height="wrap_content"
     android:padding="5dip" >
 
-    
-
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/id"
+        android:gravity="left"
+        android:text="blah blah blah blah blah blah blah blah"
         android:textColor="#040404"
         android:textSize="17sp" />
     
@@ -19,16 +20,18 @@
         android:id="@+id/artist"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-    	android:layout_below="@id/title"
+        android:layout_below="@id/title"
+        android:text="temp_also"
         android:textColor="#343434"
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/id"
+        android:id="@id/id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:text="temp"
         android:textColor="#040404"
         android:textSize="17sp" />
 
