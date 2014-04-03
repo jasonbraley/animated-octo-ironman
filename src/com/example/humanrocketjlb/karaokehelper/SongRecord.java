@@ -8,12 +8,35 @@ public class SongRecord
     private String mArtist;
     private String mId;
     private Bitmap mAlbumCover;
-    
-    public SongRecord( String artist, String title, String id )
+
+    public SongRecord(String artist, String title, String id)
     {
-	this.mArtist = artist;
-	this.mTitle = title;
-	this.mId = id;
+	if (artist == null)
+	{
+	    this.mArtist = "";
+	}
+	else
+	{
+	    this.mArtist = artist;
+	}
+
+	if (title == null)
+	{
+	    this.mTitle = "";
+	}
+	else
+	{
+	    this.mTitle = title;
+	}
+
+	if (id == null)
+	{
+	    this.mId = "";
+	}
+	else
+	{
+	    this.mId = id;
+	}
     }
 
     public String getTitle()
@@ -55,6 +78,4 @@ public class SongRecord
     {
 	this.mAlbumCover = albumCover;
     }
-    
-    
 }

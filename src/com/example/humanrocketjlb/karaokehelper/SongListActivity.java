@@ -42,6 +42,7 @@ public class SongListActivity extends ListActivity
 	
 	adapter = new SongListAdapter(getApplicationContext());
 	adapter.add(songList);
+	adapter.sortByArtist();
 	getListView().setAdapter(adapter);
     }
 

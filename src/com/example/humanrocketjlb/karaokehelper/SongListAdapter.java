@@ -1,9 +1,12 @@
 package com.example.humanrocketjlb.karaokehelper;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +16,7 @@ import android.widget.TextView;
 
 public class SongListAdapter extends BaseAdapter
 {
+    private static String TAG = "SongListAdapter";
     private final Context mContext;
     private final LayoutInflater mInflater;
     private List<SongRecord> data = new ArrayList<SongRecord>();
@@ -40,17 +44,51 @@ public class SongListAdapter extends BaseAdapter
     {
 	return position;
     }
-    
+
     public void add(SongRecord record)
     {
 	data.add(record);
 	notifyDataSetChanged();
     }
-    
-    public void add( List<SongRecord> list)
+
+    public void add(List<SongRecord> list)
     {
 	data.addAll(list);
 	notifyDataSetChanged();
+    }
+
+    public void sortByTitle()
+    {
+	Collections.sort(data, new Comparator<SongRecord>()
+	{
+	    @Override
+	    public int compare(SongRecord o1, SongRecord o2)
+	    {
+		return o1.getTitle().compareTo(o2.getTitle());
+	    }
+	});
+    }
+    
+    public void sortByArtist()
+    {
+	Collections.sort(data, new Comparator<SongRecord>()
+	{
+	    @Override
+	    public int compare(SongRecord o1, SongRecord o2)
+	    {
+		int temp = 0;
+		try
+		{
+		    temp = o1.getArtist().compareTo(o2.getArtist());
+		}
+		catch( NullPointerException myExc )
+		{
+		    Log.i(TAG,"Caught a null exception");
+		}
+		
+		return temp;
+	    }
+	});
     }
 
     @Override
@@ -69,7 +107,8 @@ public class SongListAdapter extends BaseAdapter
 	}
 	else
 	{
-	    itemLayout = (RelativeLayout) mInflater.inflate(R.layout.song, parent, false);
+	    itemLayout = (RelativeLayout) mInflater.inflate(R.layout.song,
+		    parent, false);
 	}
 
 	// Fill in specific data
@@ -78,12 +117,14 @@ public class SongListAdapter extends BaseAdapter
 	// in the layout file
 
 	// Display Title in TextView
-	final TextView titleView = (TextView) itemLayout.findViewById(R.id.title);
+	final TextView titleView = (TextView) itemLayout
+	        .findViewById(R.id.title);
 	titleView.setText(record.getTitle());
-	
-	final TextView artistView = (TextView) itemLayout.findViewById(R.id.artist);
+
+	final TextView artistView = (TextView) itemLayout
+	        .findViewById(R.id.artist);
 	artistView.setText(record.getArtist());
-	
+
 	final TextView idView = (TextView) itemLayout.findViewById(R.id.id);
 	idView.setText(record.getId());
 
