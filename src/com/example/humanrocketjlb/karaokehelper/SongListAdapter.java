@@ -11,10 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filter.FilterResults;
+import android.widget.Filterable;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class SongListAdapter extends BaseAdapter
+public class SongListAdapter extends BaseAdapter implements Filterable
 {
     private static String TAG = "SongListAdapter";
     private final Context mContext;
@@ -68,7 +71,7 @@ public class SongListAdapter extends BaseAdapter
 	    }
 	});
     }
-    
+
     public void sortByArtist()
     {
 	Collections.sort(data, new Comparator<SongRecord>()
@@ -81,11 +84,11 @@ public class SongListAdapter extends BaseAdapter
 		{
 		    temp = o1.getArtist().compareTo(o2.getArtist());
 		}
-		catch( NullPointerException myExc )
+		catch (NullPointerException myExc)
 		{
-		    Log.i(TAG,"Caught a null exception");
+		    Log.i(TAG, "Caught a null exception");
 		}
-		
+
 		return temp;
 	    }
 	});
@@ -107,8 +110,7 @@ public class SongListAdapter extends BaseAdapter
 	}
 	else
 	{
-	    itemLayout = (RelativeLayout) mInflater.inflate(R.layout.song,
-		    parent, false);
+	    itemLayout = (RelativeLayout) mInflater.inflate(R.layout.song, parent, false);
 	}
 
 	// Fill in specific data
@@ -117,12 +119,10 @@ public class SongListAdapter extends BaseAdapter
 	// in the layout file
 
 	// Display Title in TextView
-	final TextView titleView = (TextView) itemLayout
-	        .findViewById(R.id.title);
+	final TextView titleView = (TextView) itemLayout.findViewById(R.id.title);
 	titleView.setText(record.getTitle());
 
-	final TextView artistView = (TextView) itemLayout
-	        .findViewById(R.id.artist);
+	final TextView artistView = (TextView) itemLayout.findViewById(R.id.artist);
 	artistView.setText(record.getArtist());
 
 	final TextView idView = (TextView) itemLayout.findViewById(R.id.id);
@@ -132,6 +132,38 @@ public class SongListAdapter extends BaseAdapter
 
 	// Return the View you just created
 	return itemLayout;
+    }
+    
+    @Override
+    public Filter getFilter() 
+    {
+        Filter myFilter = new Filter() 
+        {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) 
+            {
+                FilterResults filterResults = new FilterResults();
+                if(constraint != null) 
+                {
+                    filterResults.values = data;
+                    filterResults.count = data.size();
+                }
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence contraint, FilterResults results) 
+            {
+                if(results != null && results.count > 0) 
+                {
+                    notifyDataSetChanged();
+                }
+                else {
+                    notifyDataSetInvalidated();
+                }
+            }
+        };
+        return myFilter;
     }
 
 }
