@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -88,6 +87,7 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
     public boolean onQueryTextSubmit(String query)
     {
 	Log.i(TAG, "Got submit " + query);
+	adapter.getFilter().filter(query);
 	mSearchView.clearFocus();
 	return false;
     }
@@ -96,6 +96,7 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
     public boolean onQueryTextChange(String newText)
     {
 	Log.i(TAG, "Got change " + newText);
+	adapter.getFilter().filter(newText);
 	return false;
     }
 
@@ -103,6 +104,7 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
     public boolean onClose()
     {
 	Log.i(TAG, "Called close");
+	adapter.getFilter().filter(null);
 	return false;
     }
 
