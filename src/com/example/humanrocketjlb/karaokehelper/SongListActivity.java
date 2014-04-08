@@ -48,7 +48,8 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
 
 	adapter = new SongListAdapter(getApplicationContext());
 	adapter.add(songList);
-	adapter.sortByArtist();
+	adapter.sortByTitle();
+	getListView().setFastScrollEnabled(true);
 	getListView().setAdapter(adapter);
     }
 

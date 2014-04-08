@@ -24,6 +24,13 @@ public class SongListAdapter extends BaseAdapter implements Filterable
     private List<SongRecord> mOriginalData;
     private List<SongRecord> mData;
 
+    static class SongRecordViewHolder
+    {
+	TextView artist;
+	TextView title;
+	TextView id;
+    }
+
     public SongListAdapter(Context context)
     {
 	mContext = context;
@@ -109,20 +116,24 @@ public class SongListAdapter extends BaseAdapter implements Filterable
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-	// Get the current ToDoItem
-	final SongRecord record = (SongRecord) getItem(position);
-
+	Log.i(TAG, "Position: " + position);
+	
 	// Inflate the View for this ToDoItem
 	// from todo_item.xml.
-	RelativeLayout itemLayout = null;
+	SongRecordViewHolder holder;
 
 	if (convertView != null)
 	{
-	    itemLayout = (RelativeLayout) convertView;
+	    holder = (SongRecordViewHolder)convertView.getTag();
 	}
 	else
 	{
-	    itemLayout = (RelativeLayout) mInflater.inflate(R.layout.song, parent, false);
+	    convertView = (RelativeLayout) mInflater.inflate(R.layout.song, parent, false);
+	    holder = new SongRecordViewHolder();
+	    holder.title = (TextView) convertView.findViewById(R.id.title);
+	    holder.artist = (TextView) convertView.findViewById(R.id.artist);
+	    holder.id = (TextView) convertView.findViewById(R.id.id);
+	    convertView.setTag(holder);
 	}
 
 	// Fill in specific data
@@ -130,20 +141,14 @@ public class SongListAdapter extends BaseAdapter implements Filterable
 	// corresponds to the user interface elements defined
 	// in the layout file
 
-	// Display Title in TextView
-	final TextView titleView = (TextView) itemLayout.findViewById(R.id.title);
-	titleView.setText(record.getTitle());
-
-	final TextView artistView = (TextView) itemLayout.findViewById(R.id.artist);
-	artistView.setText(record.getArtist());
-
-	final TextView idView = (TextView) itemLayout.findViewById(R.id.id);
-	idView.setText(record.getId());
-
-	// Set up Status CheckBox
+	// Get the current ToDoItem
+	SongRecord record = (SongRecord) getItem(position);
+	holder.title.setText(record.getTitle());
+	holder.artist.setText(record.getArtist());
+	holder.id.setText(record.getId());
 
 	// Return the View you just created
-	return itemLayout;
+	return convertView;
     }
 
     @Override
@@ -161,7 +166,7 @@ public class SongListAdapter extends BaseAdapter implements Filterable
 		    List<SongRecord> filt = new ArrayList<SongRecord>(count);
 		    List<SongRecord> lItems = mOriginalData;
 		    String lowercaseConstraint = constraint.toString().toLowerCase();
-		   
+
 		    for (int i = 0, l = lItems.size(); i < l; i++)
 		    {
 			SongRecord m = lItems.get(i);
@@ -190,21 +195,21 @@ public class SongListAdapter extends BaseAdapter implements Filterable
 	    {
 		if (results != null && results.count > 0)
 		{
-		    Log.i(TAG, "Publishing results: " + results.count );
+		    Log.i(TAG, "Publishing results: " + results.count);
 		    try
 		    {
-			mData = (ArrayList<SongRecord>)results.values;
+			mData = (ArrayList<SongRecord>) results.values;
 		    }
-		    catch( ClassCastException exc)
+		    catch (ClassCastException exc)
 		    {
 			Log.i(TAG, "Failed to cast correctly");
 		    }
-		    
+
 		    notifyDataSetChanged();
 		}
 		else
 		{
-		    Log.i(TAG, "Doing a clear" );
+		    Log.i(TAG, "Doing a clear");
 		    mData.clear();
 		    notifyDataSetChanged();
 		}
