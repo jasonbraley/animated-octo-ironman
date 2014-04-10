@@ -3,7 +3,9 @@ package com.example.humanrocketjlb.karaokehelper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import android.content.Context;
 import android.util.Log;
@@ -14,15 +16,18 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.RelativeLayout;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
-public class SongListAdapter extends BaseAdapter implements Filterable
+public class SongListAdapter extends BaseAdapter implements Filterable, SectionIndexer
 {
     private static String TAG = "SongListAdapter";
     private final Context mContext;
     private final LayoutInflater mInflater;
     private List<SongRecord> mOriginalData;
     private List<SongRecord> mData;
+    private HashMap<String, Integer> alphabetIndexer;
+    private String[] sections;
 
     static class SongRecordViewHolder
     {
@@ -73,7 +78,31 @@ public class SongListAdapter extends BaseAdapter implements Filterable
     public void add(List<SongRecord> list)
     {
 	mOriginalData = list;
+	sortByTitle();
 	mData = mOriginalData;
+
+	alphabetIndexer = new HashMap<String, Integer>();
+	int size = mData.size();
+	for (int x = 0; x < size; x++)
+	{
+	    String s = (String) mData.get(x).getTitle();
+	    // Get the first character of the track
+	    String ch = s.substring(0, 1);
+	    // convert to uppercase otherwise lowercase a -z will be sorted
+	    // after upper A-Z
+	    ch = ch.toUpperCase();
+	    if (!alphabetIndexer.containsKey(ch))
+	    {
+		alphabetIndexer.put(ch, x);
+	    }
+	}
+
+	Set<String> sectionLetters = alphabetIndexer.keySet();
+	// create a list from the set to sort
+	ArrayList<String> sectionList = new ArrayList<String>(sectionLetters);
+	Collections.sort(sectionList);
+	sections = new String[sectionList.size()];
+	sectionList.toArray(sections);
 	notifyDataSetChanged();
     }
 
@@ -117,14 +146,14 @@ public class SongListAdapter extends BaseAdapter implements Filterable
     public View getView(int position, View convertView, ViewGroup parent)
     {
 	Log.i(TAG, "Position: " + position);
-	
+
 	// Inflate the View for this ToDoItem
 	// from todo_item.xml.
 	SongRecordViewHolder holder;
 
 	if (convertView != null)
 	{
-	    holder = (SongRecordViewHolder)convertView.getTag();
+	    holder = (SongRecordViewHolder) convertView.getTag();
 	}
 	else
 	{
@@ -216,6 +245,46 @@ public class SongListAdapter extends BaseAdapter implements Filterable
 	    }
 	};
 	return myFilter;
+    }
+
+    @Override
+    public int getPositionForSection(int section)
+    {
+	String letter;
+	try
+	{
+	    letter = (String) sections[section];
+	    return alphabetIndexer.get(letter);
+	}
+	catch (ArrayIndexOutOfBoundsException exc)
+	{
+	    Log.i(TAG, "Died on section" + section);
+	}
+
+	return 0;
+    }
+
+    @Override
+    public int getSectionForPosition(int position)
+    {
+	String s = (String) mData.get(position).getTitle();
+	String ch = s.substring(0, 1);
+	
+	for(int i=0; i< sections.length; i++)
+	{
+	   if( sections[i].equals(ch)) 
+	   {
+	       return i;
+	   }
+	}
+	
+	return 0;
+    }
+
+    @Override
+    public Object[] getSections()
+    {
+	return sections;
     }
 
 }
