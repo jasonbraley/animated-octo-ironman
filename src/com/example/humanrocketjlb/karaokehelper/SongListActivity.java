@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -27,15 +28,19 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
 	new DownloaderTask(this, false).execute(myDataUrl);
 
 	adapter = new SongListAdapter(getApplicationContext());
+	requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);  
+	setProgressBarIndeterminateVisibility(true);
     }
     
     protected void setAdapter( List<SongRecord> myList )
     {
+	
 	adapter.clear();
 	adapter.add(myList);
 	getListView().setFastScrollEnabled(false);
 	getListView().setAdapter(adapter);
 	getListView().setFastScrollEnabled(true);
+	setProgressBarIndeterminateVisibility(false);
     }
 
     @Override
@@ -68,8 +73,8 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
 	case R.id.action_refresh:
 	    adapter.clear();
 	    new DownloaderTask(this, true).execute(myDataUrl);
+	    setProgressBarIndeterminateVisibility(true);
 	    return true;
-	    
 	default:
 	    return false;
 	}
