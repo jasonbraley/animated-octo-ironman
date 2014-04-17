@@ -113,7 +113,17 @@ public class SongListAdapter extends BaseAdapter implements Filterable, SectionI
 	    @Override
 	    public int compare(SongRecord o1, SongRecord o2)
 	    {
-		return o1.getTitle().compareTo(o2.getTitle());
+		int temp = 0;
+		try
+		{
+		    temp = o1.getTitle().compareTo(o2.getTitle());
+		}
+		catch (NullPointerException myExc)
+		{
+		    Log.i(TAG, "Caught a null exception");
+		}
+
+		return temp;
 	    }
 	});
 	mData = mOriginalData;
@@ -269,15 +279,15 @@ public class SongListAdapter extends BaseAdapter implements Filterable, SectionI
     {
 	String s = (String) mData.get(position).getTitle();
 	String ch = s.substring(0, 1);
-	
-	for(int i=0; i< sections.length; i++)
+
+	for (int i = 0; i < sections.length; i++)
 	{
-	   if( sections[i].equals(ch)) 
-	   {
-	       return i;
-	   }
+	    if (sections[i].equals(ch))
+	    {
+		return i;
+	    }
 	}
-	
+
 	return 0;
     }
 
@@ -285,6 +295,20 @@ public class SongListAdapter extends BaseAdapter implements Filterable, SectionI
     public Object[] getSections()
     {
 	return sections;
+    }
+
+    public void clear()
+    {
+	if (mOriginalData != null)
+	{
+	    mOriginalData.clear();
+	}
+	if (mData != null)
+	{
+	    mData.clear();
+	}
+
+	notifyDataSetChanged();
     }
 
 }
