@@ -24,7 +24,7 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
     protected void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
-	new DownloaderTask(this).execute(myDataUrl);
+	new DownloaderTask(this, false).execute(myDataUrl);
 
 	adapter = new SongListAdapter(getApplicationContext());
     }
@@ -64,6 +64,12 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
 	case R.id.action_search:
 	    Toast.makeText(getApplicationContext(), "Something here soon", Toast.LENGTH_SHORT).show();
 	    return true;
+	    
+	case R.id.action_refresh:
+	    adapter.clear();
+	    new DownloaderTask(this, true).execute(myDataUrl);
+	    return true;
+	    
 	default:
 	    return false;
 	}
