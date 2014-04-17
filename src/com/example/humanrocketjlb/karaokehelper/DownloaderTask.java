@@ -16,6 +16,8 @@ import java.util.List;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -29,7 +31,7 @@ public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
     private Boolean mForce = false;
 
     // Constructor
-    public DownloaderTask(SongListActivity parentActivity, Boolean force )
+    public DownloaderTask(SongListActivity parentActivity, Boolean force)
     {
 	super();
 
@@ -51,9 +53,24 @@ public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
 	    String fileName = Uri.parse(urlParameters[0]).getLastPathSegment();
 	    File myFile = mParentActivity.getFileStreamPath(fileName);
 	    Date today = new Date();
-	    long todayMsecs = today.getTime(); 
-	    long SEVENDAYS = 7*24*60*60*1000;
-	    if ( mForce == true || !myFile.exists() || (todayMsecs - myFile.lastModified()) > SEVENDAYS)
+	    long todayMsecs = today.getTime();
+	    long SEVENDAYS = 7 * 24 * 60 * 60 * 1000;
+
+	    ConnectivityManager cm = (ConnectivityManager) mParentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
+	    Boolean connected = true;
+	    if( netInfo == null || netInfo.isConnected() == false)
+	    {
+		connected = false;
+	    }
+	    
+	    // if we're not connect but have a file, just use it.
+	    if( connected == false && myFile.exists() )
+	    {
+		// nothing
+	    }
+	    // if we're forcing a refresh or there's no file or the file is too old, download the file.
+	    else if (mForce == true || !myFile.exists() || (todayMsecs - myFile.lastModified()) > SEVENDAYS)
 	    {
 		try
 		{
@@ -121,11 +138,11 @@ public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
 	    {
 		Log.i(TAG, "Caught XMLPullParserException");
 	    }
-	    catch( FileNotFoundException e )
+	    catch (FileNotFoundException e)
 	    {
 		Log.i(TAG, "Caught filenotfound");
 	    }
-	    catch( IOException e )
+	    catch (IOException e)
 	    {
 		Log.i(TAG, "Caught ioexception");
 	    }
