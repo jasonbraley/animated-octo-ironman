@@ -46,7 +46,7 @@ public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
 	Log.i(TAG, "In doInBackground()");
 	List<SongRecord> myList = null;
 	BufferedReader in = null;
-	FileOutputStream outputStream = null;
+	FileOutputStream out = null;
 
 	if (urlParameters != null)
 	{
@@ -56,20 +56,22 @@ public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
 	    long todayMsecs = today.getTime();
 	    long SEVENDAYS = 7 * 24 * 60 * 60 * 1000;
 
-	    ConnectivityManager cm = (ConnectivityManager) mParentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+	    ConnectivityManager cm = (ConnectivityManager) mParentActivity
+		    .getSystemService(Context.CONNECTIVITY_SERVICE);
 	    NetworkInfo netInfo = cm.getActiveNetworkInfo();
 	    Boolean connected = true;
-	    if( netInfo == null || netInfo.isConnected() == false)
+	    if (netInfo == null || netInfo.isConnected() == false)
 	    {
 		connected = false;
 	    }
-	    
+
 	    // if we're not connect but have a file, just use it.
-	    if( connected == false && myFile.exists() )
+	    if (connected == false && myFile.exists())
 	    {
 		// nothing
 	    }
-	    // if we're forcing a refresh or there's no file or the file is too old, download the file.
+	    // if we're forcing a refresh or there's no file or the file is too
+	    // old, download the file.
 	    else if (mForce == true || !myFile.exists() || (todayMsecs - myFile.lastModified()) > SEVENDAYS)
 	    {
 		try
@@ -78,13 +80,16 @@ public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
 		    URL url = new URL(urlParameters[0]);
 
 		    mHttpUrl = (HttpURLConnection) url.openConnection();
-		    outputStream = mParentActivity.openFileOutput(fileName, Context.MODE_PRIVATE);
+		    out = mParentActivity.openFileOutput(fileName, Context.MODE_PRIVATE);
 		    in = new BufferedReader(new InputStreamReader(mHttpUrl.getInputStream()));
 
 		    while ((line = in.readLine()) != null)
 		    {
-			outputStream.write(line.getBytes());
+			out.write(line.getBytes());
 		    }
+
+		    in.close();
+		    out.close();
 		}
 		catch (MalformedURLException e)
 		{
@@ -96,33 +101,20 @@ public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
 		}
 		finally
 		{
-		    if (null != mHttpUrl)
+		    try
 		    {
-			mHttpUrl.disconnect();
-		    }
-
-		    if (null != in)
-		    {
-			try
+			if (in != null)
 			{
 			    in.close();
 			}
-			catch (IOException e)
+			if (out != null)
 			{
-			    Log.i(TAG, "Caught in.close exception");
+			    out.close();
 			}
 		    }
-
-		    if (outputStream != null)
+		    catch (IOException e)
 		    {
-			try
-			{
-			    outputStream.close();
-			}
-			catch (IOException e)
-			{
-			    Log.i(TAG, "Caught outputStream.close exception");
-			}
+			Log.i(TAG, "Cannot close file descriptors");
 		    }
 		}
 	    }
@@ -133,6 +125,7 @@ public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
 	    {
 		is = mParentActivity.openFileInput(fileName);
 		myList = parser.parse(is);
+		is.close();
 	    }
 	    catch (XmlPullParserException e)
 	    {
@@ -145,6 +138,21 @@ public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
 	    catch (IOException e)
 	    {
 		Log.i(TAG, "Caught ioexception");
+	    }
+	    finally
+	    {
+		try
+		{
+		    if (is != null)
+		    {
+			is.close();
+		    }
+		}
+		catch (IOException e)
+		{
+		    Log.i(TAG, "Couldn't close is");
+		}
+
 	    }
 
 	}

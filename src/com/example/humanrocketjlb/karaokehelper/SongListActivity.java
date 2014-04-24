@@ -2,45 +2,56 @@ package com.example.humanrocketjlb.karaokehelper;
 
 import java.util.List;
 
-import android.app.ListActivity;
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
-public class SongListActivity extends ListActivity implements SearchView.OnQueryTextListener,
-        SearchView.OnCloseListener
+public class SongListActivity extends Activity implements SearchView.OnQueryTextListener, SearchView.OnCloseListener
 {
-    private SongListAdapter adapter;
+    private SongListAdapter mAdapter;
     private static String TAG = "KaraokeHelper";
     private SearchView mSearchView;
     private String myDataUrl = "http://www.cs.uml.edu/~jbraley/data.xml";
+    private ListView mListView = null;
+    private ProgressBar mProgressBar = null;
+
+    public ListView getListView()
+    {
+	return mListView;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
 	super.onCreate(savedInstanceState);
-	new DownloaderTask(this, false).execute(myDataUrl);
+	setContentView(R.layout.activity_list_view);
 
-	adapter = new SongListAdapter(getApplicationContext());
-	requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);  
-	setProgressBarIndeterminateVisibility(true);
+	mAdapter = new SongListAdapter(getApplicationContext());
+
+	mListView = (ListView) findViewById(R.id.object_list_view);
+	mListView.setAdapter(mAdapter);
+
+	mProgressBar = (ProgressBar) findViewById(R.id.object_progressBar);
+	mProgressBar.setVisibility(View.VISIBLE);
+
+	new DownloaderTask(this, false).execute(myDataUrl);
     }
-    
-    protected void setAdapter( List<SongRecord> myList )
+
+    protected void setAdapter(List<SongRecord> myList)
     {
-	
-	adapter.clear();
-	adapter.add(myList);
-	getListView().setFastScrollEnabled(false);
-	getListView().setAdapter(adapter);
-	getListView().setFastScrollEnabled(true);
-	setProgressBarIndeterminateVisibility(false);
+	mAdapter.clear();
+	mAdapter.add(myList);
+	mProgressBar.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -66,14 +77,15 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
 	case R.id.action_settings:
 	    Toast.makeText(getApplicationContext(), "Nothing to see here", Toast.LENGTH_SHORT).show();
 	    return true;
+
 	case R.id.action_search:
 	    Toast.makeText(getApplicationContext(), "Something here soon", Toast.LENGTH_SHORT).show();
 	    return true;
-	    
+
 	case R.id.action_refresh:
-	    adapter.clear();
+	    mAdapter.clear();
+	    mProgressBar.setVisibility(View.VISIBLE);
 	    new DownloaderTask(this, true).execute(myDataUrl);
-	    setProgressBarIndeterminateVisibility(true);
 	    return true;
 	default:
 	    return false;
@@ -84,7 +96,7 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
     public boolean onQueryTextSubmit(String query)
     {
 	Log.i(TAG, "Got submit " + query);
-	adapter.getFilter().filter(query);
+	mAdapter.getFilter().filter(query);
 	mSearchView.clearFocus();
 	return false;
     }
@@ -93,7 +105,7 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
     public boolean onQueryTextChange(String newText)
     {
 	Log.i(TAG, "Got change " + newText);
-	adapter.getFilter().filter(newText);
+	mAdapter.getFilter().filter(newText);
 	return false;
     }
 
@@ -101,7 +113,7 @@ public class SongListActivity extends ListActivity implements SearchView.OnQuery
     public boolean onClose()
     {
 	Log.i(TAG, "Called close");
-	adapter.getFilter().filter(null);
+	mAdapter.getFilter().filter(null);
 	return false;
     }
 

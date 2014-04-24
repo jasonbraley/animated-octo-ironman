@@ -24,8 +24,8 @@ public class SongListAdapter extends BaseAdapter implements Filterable, SectionI
     private static String TAG = "SongListAdapter";
     private final Context mContext;
     private final LayoutInflater mInflater;
-    private List<SongRecord> mOriginalData;
-    private List<SongRecord> mData;
+    private List<SongRecord> mOriginalData = null;
+    private List<SongRecord> mData = null;
     private HashMap<String, Integer> alphabetIndexer;
     private String[] sections;
 
@@ -77,33 +77,54 @@ public class SongListAdapter extends BaseAdapter implements Filterable, SectionI
 
     public void add(List<SongRecord> list)
     {
-	mOriginalData = list;
-	sortByTitle();
-	mData = mOriginalData;
-
-	alphabetIndexer = new HashMap<String, Integer>();
-	int size = mData.size();
-	for (int x = 0; x < size; x++)
+	if (list != null)
 	{
-	    String s = (String) mData.get(x).getTitle();
-	    // Get the first character of the track
-	    String ch = s.substring(0, 1);
-	    // convert to uppercase otherwise lowercase a -z will be sorted
-	    // after upper A-Z
-	    ch = ch.toUpperCase();
-	    if (!alphabetIndexer.containsKey(ch))
+	    mOriginalData = list;
+	    sortByTitle();
+	    mData = mOriginalData;
+
+	    alphabetIndexer = new HashMap<String, Integer>();
+	    int size = mData.size();
+	    for (int x = 0; x < size; x++)
 	    {
-		alphabetIndexer.put(ch, x);
+		String s = (String) mData.get(x).getTitle();
+		// Get the first character of the track
+		String ch = s.substring(0, 1);
+		// convert to uppercase otherwise lowercase a -z will be sorted
+		// after upper A-Z
+		ch = ch.toUpperCase();
+		if (!alphabetIndexer.containsKey(ch))
+		{
+		    alphabetIndexer.put(ch, x);
+		}
 	    }
+
+	    Set<String> sectionLetters = alphabetIndexer.keySet();
+	    // create a list from the set to sort
+	    ArrayList<String> sectionList = new ArrayList<String>(sectionLetters);
+	    Collections.sort(sectionList);
+	    sections = new String[sectionList.size()];
+	    sectionList.toArray(sections);
+	    notifyDataSetChanged();
+	}
+	else
+	{
+	   if( mData != null )
+	   {
+	       mData.clear();
+	   }
+	   
+	   if( mOriginalData != null )
+	   {
+	       mOriginalData.clear();
+	   }
+	   
+	   if( mData != null )
+	   {
+	       notifyDataSetChanged();
+	   }
 	}
 
-	Set<String> sectionLetters = alphabetIndexer.keySet();
-	// create a list from the set to sort
-	ArrayList<String> sectionList = new ArrayList<String>(sectionLetters);
-	Collections.sort(sectionList);
-	sections = new String[sectionList.size()];
-	sectionList.toArray(sections);
-	notifyDataSetChanged();
     }
 
     public void sortByTitle()
