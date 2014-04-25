@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -24,20 +25,20 @@ import android.util.Log;
 
 public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
 {
-    private SongListActivity mParentActivity;
-    private Context mApplicationContext;
+    private Activity mParentActivity;
     private static String TAG = "KaraokeDownloaderTask";
     private HttpURLConnection mHttpUrl;
     private Boolean mForce = false;
+    private SongListFragment mSongListFragment;
 
     // Constructor
-    public DownloaderTask(SongListActivity parentActivity, Boolean force)
+    public DownloaderTask(Activity parentActivity, SongListFragment fragment, Boolean force)
     {
 	super();
 
 	mParentActivity = parentActivity;
-	mApplicationContext = parentActivity.getApplicationContext();
 	mForce = force;
+	mSongListFragment = fragment;
     }
 
     @Override
@@ -167,7 +168,7 @@ public class DownloaderTask extends AsyncTask<String, Void, List<SongRecord>>
 
 	if (mParentActivity != null)
 	{
-	    mParentActivity.setAdapter(result);
+	    mSongListFragment.setAdapter(result);
 	}
 
     }

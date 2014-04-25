@@ -6,4 +6,6 @@
     <string name="action_refresh">Refresh</string>
     <string name="search_label">Karaoke Helper</string>
     <string name="search_hint">Search for a song</string>
+    <string name="tab_label1">Queue</string>
+    <string name="tab_label2">Catalog</string>
 </resources>
