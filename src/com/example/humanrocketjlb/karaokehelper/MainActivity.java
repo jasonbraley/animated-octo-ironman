@@ -4,26 +4,18 @@ import java.util.Locale;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
-import android.app.SearchManager;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener, SearchView.OnQueryTextListener,
-        SearchView.OnCloseListener
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener
 {
 
     /**
@@ -36,7 +28,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     private static String TAG = "KaraokeHelper";
     SectionsPagerAdapter mSectionsPagerAdapter;
-    private SearchView mSearchView;
+
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -81,45 +73,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    // the TabListener interface, as the callback (listener) for when
 	    // this tab is selected.
 	    actionBar.addTab(actionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
-	}
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-	// Inflate the menu; this adds items to the action bar if it is present.
-	getMenuInflater().inflate(R.menu.song_list, menu);
-
-	SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-	mSearchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-	mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-	mSearchView.setOnQueryTextListener(this);
-	mSearchView.setOnCloseListener(this);
-
-	return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-	switch (item.getItemId())
-	{
-	case R.id.action_settings:
-	    Toast.makeText(getApplicationContext(), "Nothing to see here", Toast.LENGTH_SHORT).show();
-	    return true;
-
-	case R.id.action_search:
-	    Toast.makeText(getApplicationContext(), "Something here soon", Toast.LENGTH_SHORT).show();
-	    return true;
-
-	case R.id.action_refresh:
-	    
-	    mAdapter.clear();
-	    mProgressBar.setVisibility(View.VISIBLE);
-	    new DownloaderTask(this, true).execute(myDataUrl);
-	    return true;
-	default:
-	    return false;
 	}
     }
 

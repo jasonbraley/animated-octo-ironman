@@ -176,8 +176,6 @@ public class SongListAdapter extends BaseAdapter implements Filterable, SectionI
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
     {
-	Log.i(TAG, "Position: " + position);
-
 	// Inflate the View for this ToDoItem
 	// from todo_item.xml.
 	SongRecordViewHolder holder;
@@ -298,7 +296,7 @@ public class SongListAdapter extends BaseAdapter implements Filterable, SectionI
     @Override
     public int getSectionForPosition(int position)
     {
-	String s = (String) mData.get(position).getTitle();
+	String s = (String) mOriginalData.get(position).getTitle();
 	String ch = s.substring(0, 1);
 
 	for (int i = 0; i < sections.length; i++)
